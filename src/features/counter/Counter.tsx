@@ -1,67 +1,38 @@
-import React, { useState } from 'react';
+import React from "react";
 
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import {
-  decrement,
-  increment,
-  incrementByAmount,
-  incrementAsync,
-  incrementIfOdd,
-  selectCount,
-} from './counterSlice';
-import styles from './Counter.module.css';
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { setMovies, selectMovies } from "./counterSlice";
+import styles from "./Counter.module.css";
 
 export function Counter() {
-  const count = useAppSelector(selectCount);
+  const movies = useAppSelector(selectMovies);
   const dispatch = useAppDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
-
-  const incrementValue = Number(incrementAmount) || 0;
 
   return (
     <div>
       <div className={styles.row}>
         <button
           className={styles.button}
-          aria-label="Decrement value"
-          onClick={() => dispatch(decrement())}
-        >
-          -
-        </button>
-        <span className={styles.value}>{count}</span>
-        <button
-          className={styles.button}
           aria-label="Increment value"
-          onClick={() => dispatch(increment())}
+          onClick={() =>
+            dispatch(
+              setMovies({
+                Poster: "N/A",
+                Title: "Amazing Spiderman Syndrome",
+                Type: "movie",
+                Year: "2012",
+                imdbID: "tt2586634",
+              })
+            )
+          }
         >
           +
         </button>
       </div>
-      <div className={styles.row}>
-        <input
-          className={styles.textbox}
-          aria-label="Set increment amount"
-          value={incrementAmount}
-          onChange={(e) => setIncrementAmount(e.target.value)}
-        />
-        <button
-          className={styles.button}
-          onClick={() => dispatch(incrementByAmount(incrementValue))}
-        >
-          Add Amount
-        </button>
-        <button
-          className={styles.asyncButton}
-          onClick={() => dispatch(incrementAsync(incrementValue))}
-        >
-          Add Async
-        </button>
-        <button
-          className={styles.button}
-          onClick={() => dispatch(incrementIfOdd(incrementValue))}
-        >
-          Add If Odd
-        </button>
+      <div>
+        {movies.map((mov, idx) => {
+          return <div key={idx}>{mov.Title}</div>;
+        })}
       </div>
     </div>
   );
