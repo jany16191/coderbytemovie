@@ -7,6 +7,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+// import axios from "axios";
 import { Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { MemoizedMovie } from "./MovieList";
@@ -27,6 +28,8 @@ interface ISearchMovieResponse {
   totalResults: string;
 }
 
+const axios = require("axios").default;
+
 export function MovieContainer() {
   const dispatch = useAppDispatch();
   const movies = useAppSelector(selectMovies);
@@ -36,27 +39,80 @@ export function MovieContainer() {
 
   const [totalResults, setTotalResults] = useState<number>(0);
 
-  const getMovies = (search: string, page: number) => {
-    fetch(`http://www.omdbapi.com/?s=${search}&page=${page}&apikey=1a9d89ac`, {
-      method: "GET",
-    })
-      .then((res) =>
-        res.text().then((text) => (text ? JSON.parse(text) : true))
-      )
-      .then((MovieResponse: ISearchMovieResponse) => {
-        if (page === 1) {
-          dispatch(setMovies(MovieResponse.Search));
-        } else {
-          const actMovies = movies?.concat(MovieResponse.Search);
-          dispatch(setMovies(actMovies));
-        }
+  const getMovies = async (search: string, page: number) => {
+    //AXIOS ASYNC/AWAIT
+    const res = await axios.get(
+      `http://www.omdbapi.com/?s=${search}&page=${page}&apikey=1a9d89ac`
+    );
 
-        setTotalResults(+MovieResponse.totalResults);
-        setCurrPage(page);
-      })
-      .catch(() => {
-        // asi sa nic nerobi lebo appka je offline
-      });
+    const data: ISearchMovieResponse = res.data;
+    if (page === 1) {
+      dispatch(setMovies(data.Search));
+    } else {
+      const actMovies = movies?.concat(data.Search);
+      dispatch(setMovies(actMovies));
+    }
+
+    setTotalResults(+data.totalResults);
+    setCurrPage(page);
+
+    //AXIOS CEZ THEN
+    // axios
+    //   .get(`http://www.omdbapi.com/?s=${search}&page=${page}&apikey=1a9d89ac`)
+    //   .then((res) => {
+    //     const data: ISearchMovieResponse = res.data;
+    //     if (page === 1) {
+    //       dispatch(setMovies(data.Search));
+    //     } else {
+    //       const actMovies = movies?.concat(data.Search);
+    //       dispatch(setMovies(actMovies));
+    //     }
+
+    //     setTotalResults(+data.totalResults);
+    //     setCurrPage(page);
+    //   });
+
+    //KLASICKY FETCH ASYNC/AWAIT
+    // const res = await fetch(
+    //   `http://www.omdbapi.com/?s=${search}&page=${page}&apikey=1a9d89ac`,
+    //   {
+    //     method: "GET",
+    //   }
+    // );
+
+    // const data: ISearchMovieResponse = await res.json();
+
+    // if (page === 1) {
+    //   dispatch(setMovies(data.Search));
+    // } else {
+    //   const actMovies = movies?.concat(data.Search);
+    //   dispatch(setMovies(actMovies));
+    // }
+
+    // setTotalResults(+data.totalResults);
+    // setCurrPage(page);
+
+    //KLASICKY FETCH CEZ THEN
+    // fetch(`http://www.omdbapi.com/?s=${search}&page=${page}&apikey=1a9d89ac`, {
+    //   method: "GET",
+    // })
+    //   .then((res) =>
+    //     res.text().then((text) => (text ? JSON.parse(text) : true))
+    //   )
+    //   .then((MovieResponse: ISearchMovieResponse) => {
+    //     if (page === 1) {
+    //       dispatch(setMovies(MovieResponse.Search));
+    //     } else {
+    //       const actMovies = movies?.concat(MovieResponse.Search);
+    //       dispatch(setMovies(actMovies));
+    //     }
+
+    //     setTotalResults(+MovieResponse.totalResults);
+    //     setCurrPage(page);
+    //   })
+    //   .catch(() => {
+    //     // asi sa nic nerobi lebo appka je offline
+    //   });
   };
 
   useEffect(() => {

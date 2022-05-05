@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { IMovie } from "../../modules/movies/MovieContainer";
 import { fetchCount } from "./counterAPI";
@@ -9,7 +9,7 @@ export interface CounterState {
 }
 
 const initialState: CounterState = {
-  value: 0,
+  value: 10,
   movies: [],
 };
 
@@ -35,10 +35,20 @@ export const counterSlice = createSlice({
     setMovies: (state, action) => {
       state.movies = action.payload;
     },
+    increment(state) {
+      state.value++;
+    },
+    decrement(state) {
+      state.value--;
+    },
+    incrementByAmount(state, action: PayloadAction<number>) {
+      state.value += action.payload;
+    },
   },
 });
 
-export const { setMovies } = counterSlice.actions;
+export const { setMovies, increment, decrement, incrementByAmount } =
+  counterSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
